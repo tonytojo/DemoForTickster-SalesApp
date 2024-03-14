@@ -1,0 +1,214 @@
+﻿@model EmbedParams
+@using Microsoft.AspNetCore.Http.Extensions;
+<style>
+    .breadcrumb-item {
+        font-size: small;
+    }
+
+    .breadcrumb {
+        padding: 9px 0 9px 0;
+    }
+
+    #reportsSidebarMenu > a > i::before {
+        content: "\f044";
+    }
+
+    #dashboardsSidebarMenu > a > i::before {
+        content: "\f080";
+    }
+
+    #createReportSidebarMenu > a > i::before {
+        content: "\f1c0";
+    }
+
+    #alteryxSidebarMenu > a > i::before {
+        content: "\f200";
+    }
+
+    #qnaSidebarMenu > a > i::before {
+        content: "\f27a";
+    }
+
+    #emailReportSidebarMenu > a > i::before {
+        content: "\f0e0";
+    }
+
+    .float-sub-menu-container > span {
+        margin: 20px 0 20px 28px;
+        color: #808080;
+        font-size: 12px;
+        border-bottom: solid thin #808080;
+    }
+
+    .float-sub-menu-container {
+        border-bottom-right-radius: 5px;
+        border-top-right-radius: 5px;
+        border-top: solid thin #484848;
+        border-right: solid thin #484848;
+        border-bottom: solid thin #484848;
+    }
+
+        .sidebar .nav > li > a, .sidebar .sub-menu > li > a, .float-sub-menu li > a, .float-sub-menu-container > span {
+            color: #d9d9d9;
+        }
+
+    body, .breadcrumb-item.active:default {
+        color: #444343
+    }
+
+    .sorting_asc::after, .sorting_desc::after, .sorting::after {
+        display: none;
+    }
+
+    #jsd-widget {
+        left: -5px !important;
+        right: 0 !important;
+    }
+
+    @@media screen and (max-width: 767px) {
+        .report-container-2 {
+            height: calc(100vh - 50px - 51px);
+        }
+
+        .report-container {
+            height: calc(100vh - 50px - 51px);
+        }
+
+        #content {
+            padding: 0;
+        }
+    }
+
+    .dropdown-menu > p {
+        text-align: center;
+        font-style: italic;
+        color: grey;
+    }
+
+    #header {
+        background-color: #003a70;
+    }
+
+    .header .navbar-brand {
+        min-width: 220px;
+        width: auto;
+    }
+
+    .header > .navbar-text {
+        padding: 16px;
+    }
+</style>
+<div>
+    <nav class="navbar navbar-light light-blue lighten-4" style=" background-color: @ViewBag.Color; height: 70px ">
+        <a href="/" style="height: 100%"><img src="@ViewBag.Logo" style=" height: 100%" /></a>
+        <div style="float: right; display: flex">
+            <div class="username" style="color: white; margin: 10px">@ViewBag.UserName</div>
+            <a id="prevLink" href="/"><i class="fas fa-arrow-circle-left" style="color: white; font-size: 44px"></i></a>
+        </div>
+    </nav>
+</div>
+<div id="report-container" style="height:calc(100vh - 100px);"></div>
+<footer class="text-center text-lg-start" style="background-color: @ViewBag.Color; color: white">
+    <div class="container p-4">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div style="height: 50%">
+                    <img src="@ViewBag.Logo" style="height: 100%; max-height: 100px" />
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <p>
+                    @ViewBag.Adress
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    if (window.location.href.includes("forced")) {
+        document.getElementById("prevLink").style.display = 'none';
+    }
+</script>
+
+@section Scripts {
+    <script src=https://cdn.jsdelivr.net/npm/sweetalert2@8></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+            var embedUrl = '@(Model.EmbedReport.First().EmbedUrl)';
+            var accessToken = '@(Model.EmbedToken.Token)';
+            var embedReportId = "@Html.Raw(Model.EmbedReport.First().ReportId)";
+            var pageName = '@Html.Raw(Model.PageName)'
+
+            var models = window["powerbi-client"].models;
+            var reportContainer = $("#report-container").get(0);
+
+            // Initialize iframe for embedding report
+            powerbi.bootstrap(reportContainer, { type: "report" });
+
+            reportLoadConfig = {
+                type: "report",
+                tokenType: models.TokenType.Embed,
+                accessToken: accessToken,
+                // You can embed different reports as per your need
+                embedUrl: embedUrl,
+                pageName: pageName,
+                permissions: models.Permissions.All, // Must be included
+                //Enable this setting to remove gray shoulders from embedded report
+                settings: {
+                    layoutType: models.LayoutType.MobilePortrait
+                }
+            };
+
+            // Embed Power BI report when Access token and Embed URL are available
+            var report = powerbi.embed(reportContainer, reportLoadConfig);
+
+            //// Clear any other loaded handler events
+            report.off("loaded");
+
+            // Clear any other rendered handler events
+            report.off("rendered");
+
+            // Clear any other error handler events
+            report.off("error");
+
+            // Handle embed errors
+            report.on("error", function (event) {
+                console.log("error", event)
+                var errorMsg = event.dModelEmbedReportMEmbedReportodelail;
+
+                // Use errorMsg variable to log error in any destination of choice
+                console.error(errorMsg);
+                return;
+            });
+
+            function fullscreen() {
+                document.getElementById("report-container")[0];
+                // Get a reference to the embedded dashboard.
+                report = powerbi.get(reportContainer);
+                // Displays the dashboard in full screen mode.
+                report.fullscreen();
+            }
+
+            function refresh() {
+                document.getElementById("report-container")[0];
+                // Get a reference to the embedded dashboard.
+                report = powerbi.get(reportContainer);
+                report.reload();
+            }
+
+            function tryParseB64(b64) {
+                try {
+                    if (!b64) return;
+                    var json = atob(b64);
+                    var obj = JSON.parse(json);
+                    return obj;
+                } catch (e) {}
+            }
+
+            function objtob64(o) {
+                return btoa(JSON.stringify(o));
+            }
+    </script>
+
+}

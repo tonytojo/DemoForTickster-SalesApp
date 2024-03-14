@@ -1,0 +1,50 @@
+﻿@await Html.PartialAsync("../../wwwroot/js/dist/main.cshtml")
+<input id="logo" value="@ViewBag.Logo" style="display: none" />
+<input id="color" value="@ViewBag.Color" style="display: none" />
+<input id="company" value="@ViewBag.Company" style="display: none" />
+<input id="companyId" value="@ViewBag.CompanyId" style="display: none" />
+<input id="adress" value="@ViewBag.Adress" style="display: none" />
+<input id="reportId" value="@ViewBag.ReportId" style="display: none" />
+<input id="salesReportId" value="@ViewBag.SalesReportId" style="display: none" />
+<input id="workspaceId" value="@ViewBag.WorkspaceId" style="display: none" />
+
+<input id="username" value="@ViewBag.UserName" style="display: none" />
+<input id="loggedInName" value="@ViewBag.Name" style="display: none" />
+<input id="userId" value="@ViewBag.UserId" style="display: none" />
+<input id="isAdmin" value="@ViewBag.IsAdmin" style="display: none" />
+<input id="isSuperUser" value="@ViewBag.IsSuperUser" style="display: none" />
+
+
+<div>
+    <nav class="navbar navbar-light light-blue lighten-4" style=" background-color: @ViewBag.Color; height: 70px ">
+        <a href="/" style="height: 100%"><img src="@ViewBag.Logo" style=" height: 100%" /></a>
+        <div id="spinner" class="spinner-border" style="color: white" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div style="float: right; display: flex">
+            <div class="username" style="color: white; margin: 10px">@ViewBag.UserName</div>
+            <a id="prevLink" href="/"><i class="fas fa-arrow-circle-left" style="color: white; font-size: 44px"></i></a>
+        </div>
+    </nav>
+</div>
+<div class="content">
+
+</div>
+<footer class="text-center text-lg-start" style="background-color: @ViewBag.Color; color: white">
+    <div class="container p-4">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div style="height: 50%">
+                    <img src="@ViewBag.Logo" style="height: 100%; max-height: 100px" />
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <p>
+                    @ViewBag.Adress
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
